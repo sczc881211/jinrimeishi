@@ -1,0 +1,137 @@
+<include file="Public:header" />
+<body>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页
+    <span class="c-gray en">&gt;</span>
+    系统管理
+    <span class="c-gray en">&gt;</span>
+    基本设置
+    <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a>
+</nav>
+<div class="page-container">
+    <form class="form form-horizontal" id="form-article-add"  id="form-article-add">
+        <div id="tab-system" class="HuiTab">
+            <div class="tabBar cl">
+                <span>基本设置</span>
+            </div>
+            <div class="tabCon">
+                <div class="row cl">
+                    <label class="form-label col-xs-4 col-sm-2">
+                        <span class="c-red">*</span>网站名称：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" id="site_name" placeholder="站点名称" value="<{$set.site_name}>" class="input-text">
+                    </div>
+                </div>
+                
+                <div class="row cl">
+                    <label class="form-label col-xs-4 col-sm-2">
+                        <span class="c-red">*</span>网站描述：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" id="description" placeholder="网站描述" value="<{$set.description}>" class="input-text">
+                    </div>
+                </div>
+                
+                <div class="row cl">
+                    <label class="form-label col-xs-4 col-sm-2">
+                        <span class="c-red">*</span>服务类目：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" id="category" placeholder="服务类目" value="<{$set.category}>" class="input-text">
+                    </div>
+                </div>
+                
+                <div class="row cl">
+                    <label class="form-label col-xs-4 col-sm-2">
+                        	<span class="c-red">*</span>主体信息：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <input type="text" id="copyright" placeholder="主体信息" value="<{$set.copyright}>" class="input-text">
+                    </div>
+                </div>
+
+                <div class="row cl">
+                    <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>logo：</label>
+                    <div class="formControls col-xs-8 col-sm-9">
+                        <div id="preview1" style="margin-bottom:10px" ><img src="<{$Think.const.HOST}><{$set.logo}>" width="120px" height="120px;" /></div>
+                        <input onchange="preview(this, 'preview1')"  type="file"  name="logo">
+                    </div>
+                </div>
+
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
+                <input type="hidden" name="id" value="<{$set.id}>" />
+                <button name="subsub" class="btn btn-primary radius" type="button"><i class="Hui-iconfont">&#xe632;</i> 保存</button>
+                <button onClick="layer_close();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
+            </div>
+        </div></div>
+    </form>
+</div>
+
+<include file="Public:footer" />
+<script src="__static__/Admin/js/jquery.form.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('button[name="subsub"]').click(function(){
+            var id = $('input[type="hidden"][name="id"]').val();
+            var site_name = $.trim($('#site_name').val());
+            var description = $.trim($('#description').val());
+            var category = $.trim($('#category').val());
+            var copyright = $.trim($('#copyright').val());
+            var logo = $('input[name="logo"]').val();
+            if(!site_name){
+                ca('站点名称不能为空');return false;
+            }
+            if(!description){
+                ca('网站描述不能为空');return false;
+            }
+            if(!category){
+                ca('服务类目不能为空');return false;
+            }
+            if(!copyright){
+                ca('主体信息不能为空');return false;
+            }
+            $('#form-article-add').ajaxSubmit({
+                type : "post",
+                url : "<{:url('Setting/index')}>",
+                data : {
+                    "id" : id,
+                    "site_name" : site_name,
+                    "description" : description,
+                    "category" : category,
+                    "copyright" : copyright,
+                    "logo" : logo
+                },
+                dataType : "json",
+                success : function(data){
+                    if(data&& data.code == 1){
+                        ca(data.msg);
+                        setTimeout(function(){
+                            window.location.href = data.url;
+                        },1200);
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+        })
+    })
+</script>
+<script type="text/javascript">
+    //图片上传插件
+    function preview(file, preview)
+    {
+        var prevDiv = document.getElementById(preview);
+        if (file.files && file.files[0])
+        {
+            var reader = new FileReader();
+            reader.onload = function(evt){
+                prevDiv.innerHTML = '<img src="' + evt.target.result + '" width="120px" height="120px" />';
+            }
+            reader.readAsDataURL(file.files[0]);
+        }
+        else
+        {
+            prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+        }
+    }
+</script>
+</body>
+</html>

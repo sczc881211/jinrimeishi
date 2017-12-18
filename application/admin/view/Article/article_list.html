@@ -1,0 +1,293 @@
+<include file="Public:header" />
+<body>
+<style>.head, .head_guohua_recommend, .head_shufa_recommend, .head_youhua_recommend{cursor:pointer}</style>
+<script type="text/javascript" src="__static__/Admin/lib/My97DatePicker/4.8/WdatePicker.js?545"></script>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 美食管理 <span class="c-gray en">&gt;</span> 美食列表 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<div class="page-container">
+    <form action="" type="post">
+        <div class="text-c">
+            美食发布日期范围：
+            <input type="text" name="bg_date" value="<{$bg_date}>" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm:ss'});" id="logmin" class="input-text Wdate" style="width:180px;">
+            -
+            <input type="text" name="end_date" value="<{$end_date}>" onfocus="WdatePicker({dateFmt: 'yyyy-MM-dd HH:mm:ss'});" id="logmax" class="input-text Wdate" style="width:180px;">&nbsp;&nbsp;
+
+            <input type="text" class="input-text" style="width:250px" placeholder="请输入美食标题" id="" name="keywords" value="<{$keywords}>" >&nbsp;&nbsp;
+            <button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜美食</button>
+        </div>
+    </form>
+
+    <div class="cl pd-5 bg-1 bk-gray mt-20"> <span class="l"><a href="javascript:;" onclick="data_del()" class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a href="javascript:;" onclick="member_add('添加美食','<{:url(\'Article/article_add\')}>','960','600')" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加美食</a></span> <span class="r">共有数据：<strong><{$num}></strong> 条</span> </div>
+    <div class="mt-20">
+        <table class="table table-border table-bordered table-hover table-bg table-sort">
+            <thead>
+            <tr class="text-c">
+                <th width="25"><input type="checkbox" value=""></th>
+                <th width="50">ID</th>
+                <th width="100">美食标题</th>
+                <th width="50">点击量</th>
+                <th width="50">视频长度</th>
+                <th width="150">美食描述</th>
+                <th width="50">添加时间</th>
+                <th width="50">状态</th>
+                <th width="50">操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="article_list" id="vo">
+                <tr class="text-c">
+                    <td><input class="listTd" type="checkbox" value="<{$vo.id}>" ></td>
+                    <td><{$vo.id}></td>
+                    <td><{$vo.title|csubstr=###,15}></td>
+                    <td><{$vo.click}></td>
+                    <td><{$vo.duration}></td>
+                    <td><{$vo.content|csubstr=###,20}></td>
+                    <td><{$vo.add_time|date="Y-m-d H:i:s", ###}></td>
+                    <td class="td-status">
+                        <if condition="$vo['status'] eq 1"><span class="label label-success radius">已启用</span>
+                            <else /><span class="label label-defaunt radius">已停用</span>
+                        </if>
+                    </td>
+                    <td class="td-manage">
+
+                        <if condition="$vo['status'] eq 1"><a style="text-decoration:none" onClick="member_stop(this,'<{$vo.id}>')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>
+                            <else /><a style="text-decoration:none" onClick="member_start(this,'<{$vo.id}>')" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe6e1;</i></a>
+                        </if>
+
+                        <a title="编辑" href="javascript:;" onclick="member_edit('编辑','<{:url(\'Article/article_edit\', array(\'id\'=>$vo[\'id\']))}>','<{$vo.id}>','960','600')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6df;</i></a>
+                        <a title="删除" href="javascript:;" onclick="member_del(this,'<{$vo.id}>')" class="ml-5" style="text-decoration:none"><i class="Hui-iconfont">&#xe6e2;</i></a>
+                    </td>
+                </tr>
+            </volist>
+
+            </tbody>
+        </table>
+    </div>
+
+    <div id="page_style"><{$page}></div>
+</div>
+
+<include file="Public:footer" />
+
+<script type="text/javascript">
+
+    /*会员-添加*/
+    function member_add(title,url,w,h){
+        layer_show(title,url,w,h);
+    }
+    /*会员-查看*/
+    function member_show(title,url,id,w,h){
+        layer_show(title,url,w,h);
+    }
+    /* 会员-区域添加*/
+    function area_add(title, url, w, h){
+        layer_show(title, url, w, h);
+    }
+    /*会员-停用*/
+    function member_stop(obj,id){
+        layer.confirm('确认要停用吗？',function(index){
+            $.ajax({
+                type: 'POST',
+                url: "<{:url('Article/article_stop')}>",
+                data:{
+                    "id" : id
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data&& data.code == 1){
+                        $(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="member_start(this,'+id+')" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe6e1;</i></a>');
+                        $(obj).parents("tr").find(".td-status").html('<span class="label label-defaunt radius">已停用</span>');
+                        $(obj).remove();
+                        layer.msg('已停用!',{icon: 5,time:1000});
+                    } else {
+                        ca(data.msg);return false;
+                    }
+
+                }
+            });
+        });
+    }
+
+    /*会员-启用*/
+    function member_start(obj,id){
+        layer.confirm('确认要启用吗？',function(index){
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/article_start")}>',
+                data:{
+                    "id" : id
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data && data.code == 1) {
+                        $(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="member_stop(this,'+id+')" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>');
+                        $(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
+                        $(obj).remove();
+                        layer.msg(data.msg, {icon: 6, time: 1000});
+                    } else {
+                        ca(data.msg);
+                        return false;
+                    }
+                }
+            });
+        });
+    }
+    /*会员-编辑*/
+    function member_edit(title,url,id,w,h){
+        layer_show(title,url,w,h);
+    }
+    /*密码-修改*/
+    function change_password(title,url,id,w,h){
+        layer_show(title,url,w,h);
+    }
+    /*会员-删除*/
+    function member_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/article_del")}>',
+                data : {
+                    "id" : id,
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data&& data.code == 1){
+                        $(obj).parents("tr").remove();
+                        layer.msg(data.msg,{icon:1,time:1000});
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+        });
+    }
+
+    /*会员-批量删除*/
+    function data_del(obj,id){
+        layer.confirm('确认要删除吗？',function(index){
+            var result = new Array();
+            $("input[class = listTd][type=checkbox]").each(function () {
+                if ($(this).is(":checked")) {
+                    result.push($(this).attr("value"));
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/article_delall")}>',
+                data : {
+                    "ids" : result.join(",")
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data && data.code == 1){
+                        layer.msg(data.msg,{icon:1,time:1000});
+                        setTimeout(function(){
+                            window.location.href=data.url;
+                        },1200)
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+        });
+    }
+
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.head').click(function(){
+            var id = $(this).attr('idd');
+            var head = $(this).attr('head');
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/head")}>',
+                data : {
+                    "id" : id,
+                    "head" : head
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data&& data.code == 1){
+                        layer.msg(data.msg,{icon:1,time:1000});
+                        setTimeout(function(){
+                            window.location.reload();
+                        },600);
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+
+        })
+        $('.head_guohua_recommend').click(function(){
+            var id = $(this).attr('idd');
+            var head_guohua_recommend = $(this).attr('head_guohua_recommend');
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/head_guohua_recommend")}>',
+                data : {
+                    "id" : id,
+                    "head_guohua_recommend" : head_guohua_recommend
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data && data.code == 1){
+                        layer.msg(data.msg,{icon:1,time:1000});
+                        setTimeout(function(){
+                            window.location.reload();
+                        },600);
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+        })
+        $('.head_shufa_recommend').click(function(){
+            var id = $(this).attr('idd');
+            var head_shufa_recommend = $(this).attr('head_shufa_recommend');
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/head_shufa_recommend")}>',
+                data : {
+                    "id" : id,
+                    "head_shufa_recommend" : head_shufa_recommend
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data&& data.code == 1){
+                        layer.msg(data.msg,{icon:1,time:1000});
+                        setTimeout(function(){
+                            window.location.reload();
+                        },600);
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+        })
+        $('.head_youhua_recommend').click(function(){
+            var id = $(this).attr('idd');
+            var head_youhua_recommend = $(this).attr('head_youhua_recommend');
+            $.ajax({
+                type: 'POST',
+                url: '<{:url("Article/head_youhua_recommend")}>',
+                data : {
+                    "id" : id,
+                    "head_youhua_recommend" : head_youhua_recommend
+                },
+                dataType: 'json',
+                success: function(data){
+                    if(data&& data.code == 1){
+                        layer.msg(data.msg,{icon:1,time:1000});
+                        setTimeout(function(){
+                            window.location.reload();
+                        },600);
+                    } else {
+                        ca(data.info);return false;
+                    }
+                }
+            });
+        })
+    })
+</script>
+</body>
+</html>

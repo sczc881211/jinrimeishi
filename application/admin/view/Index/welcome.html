@@ -1,0 +1,38 @@
+<include file="public:header"  />
+<body>
+<div class="page-container">
+    <p class="f-20 text-success"><{$set.site_name}> <span class="f-14"></span></p>
+    <!--<p>登录次数：18 </p>-->
+    <table class="table table-border table-bordered table-bg">
+        <thead>
+        <tr>
+            <th colspan="7" scope="col">信息统计</th>
+        </tr>
+        <tr class="text-c">
+            <th>管理员</th>
+            <th>美食</th>
+            <th>评论</th>
+        </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><{$count_admin}></td>
+                <td><{$count_article}></td>
+                <td><{$count_comment}></td>
+            </tr>
+
+        </tbody>
+    </table>
+
+</div>
+<footer class="footer mt-20">
+    <div class="container">
+        <p>
+            九点连线信息技术<br>
+            本后台系统由<a href="javascript:;" title="九点连线">九点连线</a>提供技术支持</p>
+    </div>
+</footer>
+<script type="text/javascript" src="__static__/Admin/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="__static__/Admin/js/H-ui.min.js"></script>
+</body>
+</html>

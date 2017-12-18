@@ -1,0 +1,126 @@
+
+<include file="Public:header" />
+<body>
+<article class="page-container">
+    <form action="" method="post" class="form form-horizontal" id="form-article-add">
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>美食标题：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入美食标题" id="title" name="title">
+            </div>
+        </div>
+
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">播放量：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入播放量" id="click" name="click">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">视频时长：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="text" class="input-text" placeholder="请输入视频播放时长,如15:34" id="duration" name="duration">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>美食视频：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <input type="file"  name="video">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>美食图片：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <div id="preview" style="margin-bottom:10px" ><img src="__static__/Admin/images/defaultpic.gif" width="120px" height="120px;" /></div>
+                <input onchange="preview(this)"  type="file"  name="pic">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>美食内容：</label>
+            <div class="formControls col-xs-8 col-sm-9">
+                <script id="container" name="content" type="text/plain"></script>
+            </div>
+        </div>
+        <div class="row cl">
+            <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-3">
+                <input class="btn btn-primary radius" type="button" value="&nbsp;&nbsp;提交&nbsp;&nbsp;">
+            </div>
+        </div>
+    </form>
+</article>
+
+<include file="Public:footer" />
+<script type="text/javascript" src="__static__/Admin/lib/ueditor/1.4.3/ueditor.config.js"></script>
+<script type="text/javascript" src="__static__/Admin/lib/ueditor/1.4.3/ueditor.all.js"> </script>
+<script type="text/javascript" src="__static__/Admin/lib/ueditor/1.4.3/lang/zh-cn/zh-cn.js"></script>
+<script src="__static__/Admin/js/jquery.form.js"></script>
+<script type="text/javascript">
+    var ue = UE.getEditor('container',{
+        initialFrameWidth :660,//设置编辑器宽度
+        initialFrameHeight:450,//设置编辑器高度
+        scaleEnabled:true
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('input[type="button"]').click(function(){
+            var title = $.trim($('#title').val());
+            var click = $.trim($('#click').val());
+            var duration = $.trim($('#duration').val());
+            var video = $('input[name="video"]').val();
+            var pic = $('input[name="pic"]').val();
+            var content = UE.getEditor('container').getContent();
+
+            if(!title){
+                ca('美食标题不能为空');return false;
+            }
+            if(!content){
+                ca('美食内容不能为空');return false;
+            }
+            $('#form-article-add').ajaxSubmit({
+                type : "post",
+                url : "<{:url('Article/article_add')}>",
+                data : {
+                    "title" : title,
+                    "click" : click,
+                    'duration' :duration,
+                    "video" : video,
+                    "pic" : pic,
+                    "content" : content
+                },
+                dataType : "json",
+                success : function(data){
+                    if(data && data.code == 1){
+                        ca(data.msg);
+                        setTimeout(function(){
+                            window.parent.location.reload();
+                        },1200)
+                    } else {
+                        ca(data.msg);return false;
+                    }
+                }
+            });
+        })
+    })
+</script>
+<script type="text/javascript">
+    //图片上传插件
+    function preview(file)
+    {
+        var prevDiv = document.getElementById('preview');
+        if (file.files && file.files[0])
+        {
+            var reader = new FileReader();
+            reader.onload = function(evt){
+                prevDiv.innerHTML = '<img src="' + evt.target.result + '" width="120px" height="120px" />';
+            }
+            reader.readAsDataURL(file.files[0]);
+        }
+        else
+        {
+            prevDiv.innerHTML = '<div class="img" style="filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod=scale,src=\'' + file.value + '\'"></div>';
+        }
+    }
+</script>
+</body>
+</html>
