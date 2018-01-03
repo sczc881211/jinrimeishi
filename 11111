@@ -1,0 +1,13 @@
+diff --git "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\TortoiseGit\\database-9b3b992.002.php" "b/F:\\www\\Git\\jinrimeishi\\application\\database.php"
+index f4a5132..d7bad5b 100644
+--- "a/C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\TortoiseGit\\database-9b3b992.002.php"
++++ "b/F:\\www\\Git\\jinrimeishi\\application\\database.php"
+@@ -15,7 +15,7 @@ return [
+     // 服务器地址
+     'hostname'        => '127.0.0.1',
+     // 数据库名
+-    'database'        => 'jinrimeishi',
++    'database'        => 'demo9',
+     // 用户名
+     'username'        => 'root',
+     // 密码
